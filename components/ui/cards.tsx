@@ -113,11 +113,37 @@ const Skeleton2 = ({ className }: { className?: string }) => {
     );
 };
 
+const Skeleton3 = ({ className }: { className?: string }) => {
+    return (
+        <div className="h-50 w-full relative -translate-y-4 overflow-hidden p-3 grid grid-cols-[repeat(18,minmax(0,1fr))] gap-1">
+            {[...Array(180)].map((_, i) => {
+                const row = Math.floor(i / 18);
+                const col = i % 18;
+                return (
+                    <motion.div
+                        key={i}
+                        className={cn("aspect-square rounded-[2px]", className)}
+                        animate={{
+                            opacity: [0.05, 0.7, 0.05],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            delay: (row + col) * 0.07,
+                            ease: "easeInOut",
+                        }}
+                    />
+                );
+            })}
+        </div>
+    );
+};
+
 export const Cards = () => {
     const cards = [
         {
             title: 'Working Knowledge',
-            description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.',
+            description: 'Frameworks, principles and models that I have learned and developed.',
             skeleton: <Skeleton className="bg-[#fefbbf]" />,
 
             className: 'bg-[#e44f11] [&_h2]:text-[#fefbbf] [&_p]:text-[#fefbbf] [&_h2]:font-noto-serif [&_h2]:font-normal [&_h2]:text-4xl',
@@ -132,7 +158,7 @@ export const Cards = () => {
         {
             title: 'Practical Demonstration',
             description: 'See concepts come to life through hands-on examples and real-world applications.',
-            skeleton: <Skeleton className="bg-stone-500/40" />,
+            skeleton: <Skeleton3 className="bg-stone-500/80" />,
             className: 'bg-[#f6ead8] [&_h2]:text-[#524632] [&_p]:text-[#524632] [&_h2]:font-noto-serif [&_h2]:font-normal [&_h2]:text-4xl',
             config: {
                 x: 180,
@@ -156,7 +182,7 @@ export const Cards = () => {
         {
             title: 'Means and Methods',
             description: 'Explore the tools, techniques, and workflows that power modern digital craft.',
-            skeleton: <Skeleton className="bg-emerald-100/40" />,
+            skeleton: <Skeleton3 className="bg-emerald-500/80" />,
             className: 'bg-[#53f298] [&_h2]:text-[#035608] [&_p]:text-[#035608] [&_h2]:font-noto-serif [&_h2]:font-normal [&_h2]:text-4xl',
             config: {
                 x: 540,
@@ -232,14 +258,18 @@ export const Cards = () => {
                             damping: 17,
                         }}
                         style={{
-                            zIndex: active?.config.zIndex,
+                            zIndex: card.config.zIndex,
                         }}
                     >
                         {card.skeleton}
                         <motion.div
+                            layout={isCurrentActive(card)}
+                            className={cn(
+                                "relative z-10 text-left flex flex-col items-start",
+                                isCurrentActive(card) && "absolute top-[380px] left-8 right-8"
+                            )}
                             animate={{
-                                y: isCurrentActive(card) ? -50 : 0,
-                                scale: isCurrentActive(card) ? 1.05 : 1,
+                                y: isCurrentActive(card) ? -120 : 0,
                             }}
                             transition={{
                                 type: "spring",
@@ -248,16 +278,16 @@ export const Cards = () => {
                             }}
                         >
                             <motion.h2
-                                layoutId={card.title + "title"}
+                                layout={isCurrentActive(card)}
                                 className="text-2xl text-white font-inter font-semibold">{card.title}</motion.h2>
-                            <AnimatePresence mode="popLayout">
+                            <AnimatePresence>
                                 {isCurrentActive(card) && (
                                     <motion.p
-                                        layoutId={card.title + "description"}
-                                        initial={{ opacity: 0, x: 20, y: 20, height: 0 }}
-                                        animate={{ opacity: 1, x: 0, y: 0, height: 100 }}
-                                        exit={{ opacity: 0, x: 40, y: 40, height: 0 }}
-                                        className="text-white/80 font-inter text-sm mt-3 text-left">{card.description}</motion.p>
+                                        layout
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="text-white/80 font-inter text-sm mt-3 text-left overflow-hidden">{card.description}</motion.p>
 
                                 )}
                             </AnimatePresence>
